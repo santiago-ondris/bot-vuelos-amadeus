@@ -69,9 +69,9 @@ async function buscarYGuardarVuelo(origen, destino, fecha) {
                 `🛫 *${origen}* ➡️ *${destino}*\n` +
                 `📅 Fecha: ${fecha}\n` +
                 `🕒 Hora: *${horaSalida}*\n` + 
-                `🔢 Vuelo: *${aerolineaCode} ${vueloNumero}*\n` + 
+                `🔢 Vuelo: *${aerolinea} ${vueloNumero}*\n` + 
                 `💰 Precio: *${precio} ${moneda}*\n` +
-                `🏢 Aerolínea: ${aerolineaCode}\n\n` +
+                `🏢 Aerolínea: ${aerolinea}\n\n` +
                 `🔗 [Buscar en Google](${link})`;
             
             await enviarNotificacion(mensaje);
