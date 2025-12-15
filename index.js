@@ -59,15 +59,20 @@ async function buscarYGuardarVuelo(origen, destino, fecha) {
             const aerolinea = oferta.itineraries[0].segments[0].carrierCode;
             const precio = parseFloat(oferta.price.total);
             const moneda = oferta.price.currency;
+            const vueloNumero = oferta.itineraries[0].segments[0].number;
+            const salidaRaw = oferta.itineraries[0].segments[0].departure.at; 
+            const horaSalida = salidaRaw.split('T')[1].substring(0, 5);
 
-            const link = `http://googleusercontent.com/google.com/travel/flights?tfs=CBwQAA&q=Flights%20to%20${destino}%20from%20${origen}%20on%20${fecha}`;
+            const link = `https://www.google.com/travel/flights?q=Flights%20to%20${destino}%20from%20${origen}%20on%20${fecha}`;
 
             const mensaje = `✈️ *Vuelo Detectado*\n\n` +
                 `🛫 *${origen}* ➡️ *${destino}*\n` +
                 `📅 Fecha: ${fecha}\n` +
+                `🕒 Hora: *${horaSalida}*\n` + 
+                `🔢 Vuelo: *${aerolineaCode} ${vueloNumero}*\n` + 
                 `💰 Precio: *${precio} ${moneda}*\n` +
-                `🏢 Aerolínea: ${aerolinea}\n\n` +
-                `🔗 [Ver en Google Flights](${link})`;
+                `🏢 Aerolínea: ${aerolineaCode}\n\n` +
+                `🔗 [Buscar en Google](${link})`;
             
             await enviarNotificacion(mensaje);
         } else {
