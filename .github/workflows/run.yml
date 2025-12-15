@@ -1,0 +1,30 @@
+name: Buscador Diario de Vuelos
+
+on:
+  schedule:
+    # Se ejecuta todos los días a las 12:00 UTC (9:00 AM Argentina)
+    - cron: '0 12 * * *'
+  # Esto permite ejecutarlo manualmente con un click para probar
+  workflow_dispatch:
+
+jobs:
+  buscar-vuelos:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Descargar código
+      uses: actions/checkout@v4
+
+    - name: Instalar Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Instalar dependencias
+      run: npm install
+
+    - name: Ejecutar el Bot
+      env:
+        AMADEUS_CLIENT_ID: ${{ secrets.AMADEUS_CLIENT_ID }}
+        AMADEUS_CLIENT_SECRET: ${{ secrets.AMADEUS_CLIENT_SECRET }}
+      run: node index.js
