@@ -1,11 +1,19 @@
 require('dotenv').config();
 const Amadeus = require('amadeus');
-const db = require('./database');
+const TelegramBot = require('node-telegram-bot-api');
 
 const amadeus = new Amadeus({
     clientId: process.env.AMADEUS_CLIENT_ID,
     clientSecret: process.env.AMADEUS_CLIENT_SECRET
 });
+
+const telegramToken = process.env.TELEGRAM_TOKEN;
+const chatId = process.env.TELEGRAM_CHAT_ID;
+let bot = null;
+
+if(telegramToken) {
+    bot = new TelegramBot(telegramToken, {polling: false});
+}
 
 const CONFIG = {
     origenes: ['COR', 'EZE'],
@@ -17,6 +25,18 @@ function obtenerFechaFutura(mesesAdicionales) {
     const fecha = new Date();
     fecha.setMonth(fecha.getMonth() + mesesAdicionales);
     return fecha.toISOString().split('T')[0];
+}
+
+async function enviarNotificacion(mensaje) {
+    if(bot && chatId) {
+        try {
+            await bot.sendMessage(chatId, mensaje, {parse_mode: 'Markdown'});
+        } catch (error) {
+            console.error("error enviando telegram:", error.message);
+        }
+    }else {
+        console.log("telegram no configurado, notificacion salteada");
+    }
 }
 
 async function buscarYGuardarVuelo(origen, destino, fecha) {
@@ -36,20 +56,20 @@ async function buscarYGuardarVuelo(origen, destino, fecha) {
 
         if (response.data.length > 0) {
             const oferta = response.data[0];
+            const aerolinea = oferta.itineraries[0].segments[0].carrierCode;
+            const precio = parseFloat(oferta.price.total);
+            const moneda = oferta.price.currency;
 
-            const aerolineaCode = oferta.itineraries[0].segments[0].carrierCode;
+            const link = `https://www.google.com/travel/flights?q=Flights%20to%20${destino}%20from%20${origen}%20on%20${fecha}%20through%20${aerolinea}`;
 
-            const datosVuelo = {
-                recorded_at: new Date().toISOString(),
-                origin: origen,
-                destination: destino,
-                departure_date: fecha,
-                airline: aerolineaCode,
-                price: parseFloat(oferta.price.total),
-                currency: oferta.price.currency
-            };
-
-            db.savePrice(datosVuelo);
+            const mensaje = `✈️ *Vuelo Detectado*\n\n` +
+                `🛫 *${origen}* ➡️ *${destino}*\n` +
+                `📅 Fecha: ${fecha}\n` +
+                `💰 Precio: *${precio} ${moneda}*\n` +
+                `🏢 Aerolínea: ${aerolinea}\n\n` +
+                `🔗 [Ver en Google Flights](${link})`;
+            
+            await enviarNotificacion(mensaje);
         } else {
             console.log("no se encontraron vuelos")
         }
@@ -63,7 +83,8 @@ async function buscarYGuardarVuelo(origen, destino, fecha) {
 }
 
 async function main() {
-    console.log('⏰ --- INICIANDO RONDA DE BÚSQUEDA AUTOMÁTICA ---');
+    console.log('--- iniciando reporte ---');
+    await enviarNotificacion("El bot de vuelos empieza su ronda diaria");
 
     for (const origen of CONFIG.origenes) {
         for (const destino of CONFIG.destinos) {
@@ -73,6 +94,8 @@ async function main() {
             }
         }
     }
+    await enviarNotificacion("Ronda terminada");
+    console.log("fin");
 }
 
 main();
