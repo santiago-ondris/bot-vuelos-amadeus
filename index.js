@@ -60,7 +60,7 @@ async function buscarYGuardarVuelo(origen, destino, fecha) {
             const precio = parseFloat(oferta.price.total);
             const moneda = oferta.price.currency;
 
-            const link = `https://www.google.com/travel/flights?q=Flights%20to%20${destino}%20from%20${origen}%20on%20${fecha}%20through%20${aerolinea}`;
+            const link = `http://googleusercontent.com/google.com/travel/flights?tfs=CBwQAA&q=Flights%20to%20${destino}%20from%20${origen}%20on%20${fecha}`;
 
             const mensaje = `✈️ *Vuelo Detectado*\n\n` +
                 `🛫 *${origen}* ➡️ *${destino}*\n` +

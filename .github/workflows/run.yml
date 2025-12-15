@@ -27,4 +27,6 @@ jobs:
       env:
         AMADEUS_CLIENT_ID: ${{ secrets.AMADEUS_CLIENT_ID }}
         AMADEUS_CLIENT_SECRET: ${{ secrets.AMADEUS_CLIENT_SECRET }}
+        TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       run: node index.js
