@@ -17,7 +17,7 @@ if(telegramToken) {
 
 const CONFIG = {
     origenes: ['COR', 'EZE'],
-    destinos: ['MIA', 'JFK', 'SFO'],
+    destinos: ['MIA', 'JFK'],
     mesesAFuturo: [5, 6, 7]
 };
 
